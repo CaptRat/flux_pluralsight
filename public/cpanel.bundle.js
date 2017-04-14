@@ -65,19 +65,37 @@
 	
 	var controlPanelDispatcher = new _flux.Dispatcher();
 	
+	var UPDATE_USERNAME = "UPDATE_USERNAME";
+	
+	var UPDATE_FONT_SIZE_PREFERENCE = 'UPDATE_FONT_SIZE_PREFERENCE';
+	
+	var userNameUpdateAction = function userNameUpdateAction(name) {
+	  return {
+	    type: 'UPDATE_USERNAME',
+	    value: name
+	  };
+	};
+	
+	var fontSizePreferenceUpdateAction = function fontSizePreferenceUpdateAction(size) {
+	  return {
+	    type: 'UPDATE_FONT_SIZE_PREFERENCE',
+	    value: size
+	  };
+	};
+	
 	document.getElementById('userNameInput').addEventListener('input', function (_ref) {
 	  var target = _ref.target;
 	
 	  var name = target.value;
 	  console.log("Dispatching...", name);
-	  controlPanelDispatcher.dispatch('TODO__NAMEINPUTACTION');
+	  controlPanelDispatcher.dispatch(userNameUpdateAction(name));
 	});
 	
 	document.forms.fontSizeForm.fontSize.forEach(function (element) {
 	  element.addEventListener('change', function (_ref2) {
 	    var target = _ref2.target;
 	
-	    controlPanelDispatcher.dispatch('TODO__FONTUPDATEACTION');
+	    controlPanelDispatcher.dispatch(fontSizePreferenceUpdateAction(target.value));
 	  });
 	});
 	
@@ -101,7 +119,16 @@
 	  }, {
 	    key: '__onDispatch',
 	    value: function __onDispatch(action) {
-	      console.log("Store recieved dispatch", action);
+	      switch (action.type) {
+	        case UPDATE_USERNAME:
+	          this.__state.userName = action.value;
+	          this.__emitChange();
+	          break;
+	        case UPDATE_FONT_SIZE_PREFERENCE:
+	          this.__state.fontSize = action.value;
+	          this.__emitChange();
+	          break;
+	      }
 	    }
 	  }, {
 	    key: 'getUserPreferences',
@@ -112,6 +139,22 @@
 	
 	  return UserPrefsStore;
 	}(_flux.Store);
+	
+	var userPrefsStore = new UserPrefsStore(controlPanelDispatcher);
+	
+	userPrefsStore.addListener(function (state) {
+	  console.info("The current state is...", state);
+	  render(state);
+	});
+	
+	var render = function render(_ref3) {
+	  var userName = _ref3.userName,
+	      fontSize = _ref3.fontSize;
+	
+	  document.getElementById("userName").innerText = userName;
+	  document.getElementByClassName("container")[0].style.fontSize = fontSize === "small" ? "16px" : "24px";
+	  document.forms.fontSizeForm.fontSize.value = fontSize;
+	};
 	
 	controlPanelDispatcher.register(function (action) {
 	  console.log("Recieved action...", action);
