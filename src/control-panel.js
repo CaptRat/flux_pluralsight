@@ -1,4 +1,4 @@
-import { Dispatcher} from './flux';
+import { Dispatcher, Store} from './flux';
 
 const controlPanelDispatcher = new Dispatcher();
 
@@ -12,6 +12,30 @@ document.forms.fontSizeForm.fontSize.forEach(element=>{
   element.addEventListener('change',({target})=>{
     controlPanelDispatcher.dispatch('TODO__FONTUPDATEACTION');
   })
+})
+
+class UserPrefsStore extends Store {
+  getInitialState(){
+    return {
+      userName:"Patrick",
+      fontSize:"small"
+    }
+  }
+
+  __onDispatch(action){
+    console.log("Store recieved dispatch",action);
+    this.__emitChange();
+  }
+
+  getUserPreferences(){
+    return this.__state;
+  }
+}
+
+const userPrefsStore = new UserPrefsStore(controlPanelDispatcher);
+
+userPrefsStore.addListener((state)=> {
+  console.info("The current state is...", state);
 })
 
 controlPanelDispatcher.register(action=>{
