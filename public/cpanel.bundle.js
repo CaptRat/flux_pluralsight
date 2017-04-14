@@ -152,7 +152,7 @@
 	      fontSize = _ref3.fontSize;
 	
 	  document.getElementById("userName").innerText = userName;
-	  document.getElementByClassName("container")[0].style.fontSize = fontSize === "small" ? "16px" : "24px";
+	  document.getElementsByClassName("container")[0].style.fontSize = fontSize === "small" ? "16px" : "24px";
 	  document.forms.fontSizeForm.fontSize.value = fontSize;
 	};
 	
